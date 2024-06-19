@@ -66,3 +66,8 @@
   border: none;
   background-color: #4e75ff;
 }
+
+.search-button:hover,
+.search-button:focus {
+  background-color: #6c8cff;
+}

@@ -2,7 +2,7 @@ import { renderMarkup } from './js/render-functions';
 import { getImage } from './js/pixabay-api';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
-import SimpleLightbox from 'Simplelightbox';
+import simpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const searchForm = document.querySelector('.search-form');
@@ -46,7 +46,7 @@ function createMessage(title, message) {
   });
 }
 
-const lightbox = new SimpleLightbox('.gallery-list a', {
+const lightbox = new simpleLightbox('.gallery-list a', {
   captions: true,
   captionsData: 'alt',
   captionPosition: 'bottom',
