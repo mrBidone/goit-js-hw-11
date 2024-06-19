@@ -1,40 +1,54 @@
+import { renderMarkup } from './js/render-functions';
+import { getImage } from './js/pixabay-api';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+import SimpleLightbox from 'Simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 const searchForm = document.querySelector('.search-form');
-const markupList = document.querySelector('.image-list');
+const markupList = document.querySelector('.gallery-list');
 
 searchForm.addEventListener('submit', event => {
   event.preventDefault();
 
-  const inputValue = searchForm.elements.search.value;
+  const inputValue = event.target.elements.search.value;
 
   if (!inputValue) {
-    return alert('Enter');
-  }
-  getImage(inputValue)
-    .then(data => {
-      console.log(data.hits.pageUrl);
-    })
-    .catch(err => {});
+    createMessage('Oops', 'You forgot to enter a search query!');
+    markupList.innerHTML = '';
+  } else {
+    getImage(inputValue)
+      .then(data => {
+        if (data.hits.length === 0) {
+          markupList.innerHTML = '';
+          createMessage(
+            'Sorry',
+            'there are no images matching your search query. Please try again!'
+          );
+        }
+        const markup = renderMarkup(data.hits);
+        markupList.innerHTML = markup;
+        lightbox.refresh();
+      })
+      .catch(err => {});
 
-  searchForm.reset();
-  console.log(inputValue);
+    searchForm.reset();
+  }
 });
 
-function getImage(imgName) {
-  const BASE_URL = 'https://pixabay.com';
-  const END_POINT = '/api/';
-
-  const params = new URLSearchParams({
-    key: '44449535-a1df9548b4e4ca826019364d7',
-    q: imgName,
+function createMessage(title, message) {
+  iziToast.error({
+    title: title,
+    message: message,
+    backgroundColor: '#EF4040',
+    theme: 'dark',
+    position: 'topRight',
   });
-
-  const url = `${BASE_URL}${END_POINT}?${params}`;
-
-  return fetch(url).then(res => res.json());
 }
 
-function renderMarkup() {
-  markupList.innerHTML(
-    `<li class="image-item"><img class="image" src="${hits.pageURL}" alt=""></li>`
-  );
-}
+const lightbox = new SimpleLightbox('.gallery-list a', {
+  captions: true,
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});
