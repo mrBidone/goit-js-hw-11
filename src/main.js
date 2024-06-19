@@ -7,6 +7,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const searchForm = document.querySelector('.search-form');
 const markupList = document.querySelector('.gallery-list');
+const loader = document.querySelector('.loader');
 
 searchForm.addEventListener('submit', event => {
   event.preventDefault();
@@ -17,6 +18,7 @@ searchForm.addEventListener('submit', event => {
     createMessage('Oops', 'You forgot to enter a search query!');
     markupList.innerHTML = '';
   } else {
+    showLoader();
     getImage(inputValue)
       .then(data => {
         if (data.hits.length === 0) {
@@ -30,7 +32,10 @@ searchForm.addEventListener('submit', event => {
         markupList.innerHTML = markup;
         lightbox.refresh();
       })
-      .catch(err => {});
+      .catch(err => {})
+      .finally(() => {
+        hideLoader();
+      });
 
     searchForm.reset();
   }
@@ -52,3 +57,11 @@ const lightbox = new simpleLightbox('.gallery-list a', {
   captionPosition: 'bottom',
   captionDelay: 250,
 });
+
+function showLoader() {
+  loader.classList.remove('is-hidden');
+}
+
+function hideLoader() {
+  loader.classList.add('is-hidden');
+}
